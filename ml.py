@@ -6,7 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 import joblib
 
 # Load dataset from CSV
-csv_path = r"F:\VsWorkPath\Crop\asserts\crop_yield_prediction_dataset_no_rainfall.csv"
+csv_path = r"asserts\crop_yield_data.csv"
 try:
     df = pd.read_csv(csv_path)
 except FileNotFoundError:
