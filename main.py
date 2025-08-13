@@ -6,6 +6,7 @@ import threading
 import time
 import joblib
 import numpy as np
+import pandas as pd
 from datetime import datetime
 import requests
 import pyttsx3
@@ -193,8 +194,15 @@ def update_crop_image(yield_percent):
 #Yield Prediction
 def predict_status(soil, temp, hum, lux):
     current_month = datetime.now().month
-    sample = np.array([[soil, hum, temp, lux, current_month]])
-    prediction = model.predict(sample)[0]
+    # Create DataFrame with the exact same column names and order used in training
+    sample_df = pd.DataFrame([{
+        "Soil Moisture": soil,
+        "Humidity": hum,
+        "Temperature": temp,
+        "Light Intensity": lux,
+        "Month": current_month
+    }])
+    prediction = model.predict(sample_df)[0]
     return prediction
 
 # Arduino data communication
@@ -211,7 +219,7 @@ def read_serial():
                     hum = float(parts[2])
                     lux = int(parts[3])
 
-                    soil_pct = 100 - soil
+                    soil_pct = soil
 
                     soil_label.config(text=f"{soil_pct}%")
                     temp_label.config(text=f"{temp:.1f}°C")
@@ -222,7 +230,7 @@ def read_serial():
                     print(status)
 
                     status_to_yield = {
-                        "High": 80,
+                        "High": 90,
                         "Medium": 70,
                         "Low": 50,
                         "Unsustainable": 10

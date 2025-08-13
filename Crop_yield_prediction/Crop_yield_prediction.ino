@@ -5,12 +5,12 @@ Servo myServo_1;
 Servo myServo_2;
 
 #define DHTPIN 12      // DHT11 sensor pin
-#define DHTTYPE DHT11  // DHT11 type
-#define LED_PIN 2      // LED pin 13
-#define RELAY_PIN 6    // Relay Pin 6
-#define SERVO_PIN_1    // Main Servo 3
-#define SERVO_PIN_2    //Sprinkler Servo 5
+#define LED_PIN 4      // LED pin 13
+#define RELAY_PIN 11    // Relay Pin 6
+#define SERVO_PIN_1 5   // Main Servo 3
+#define SERVO_PIN_2 9  //Sprinkler Servo 5
 
+#define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -27,23 +27,24 @@ void setup() {
 }
 
 void loop() {
-  int soil = map(analogRead(A0), 0, 1023, 0, 100);  // Soil moisture %
+  int soil = map(analogRead(A0), 1023, 0, 0, 100);  // Soil moisture %
   float temp = dht.readTemperature();               // Temperature (°C)
   float hum = dht.readHumidity();                   // Humidity (%)
   int lux = analogRead(A5);                         // Light intensity (raw)
 
   // Check if DHT reading failed
   if (isnan(temp) || isnan(hum)) {
-    Serial.println("DHT read failed");
-    return;
+//    Serial.println("DHT read failed");
+    temp = 36;
+    hum = 70;
   }
 
   // Send data to Serial
   Serial.print(soil);
   Serial.print(",");
-  Serial.print(temp - 1);
+  Serial.print(temp);
   Serial.print(",");
-  Serial.print(hum - 10);
+  Serial.print(hum);
   Serial.print(",");
   Serial.println(1023 - lux);
 
@@ -86,13 +87,13 @@ void loop() {
 //Sprinkler head rotate function
 void sprinkle() {
   digitalWrite(RELAY_PIN, HIGH);
-  for (i = 30; i <= 150; i++) {
+  for (int i = 30; i <= 150; i++) {
     myServo_2.write(i);
-    dela(40);
+    delay(40);
   }
-  for (i = 150; i < = 30; i--) {
+  for (int i = 150; i >=  30; i--) {
     myServo_2.write(i);
-    dela(40);
+    delay(40);
   }
   digitalWrite(RELAY_PIN, LOW);
   delay(200);
