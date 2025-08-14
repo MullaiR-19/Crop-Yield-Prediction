@@ -34,7 +34,7 @@ void loop() {
 
   // Check if DHT reading failed
   if (isnan(temp) || isnan(hum)) {
-//    Serial.println("DHT read failed");
+    //    Serial.println("DHT read failed");
     temp = 36;
     hum = 70;
   }
