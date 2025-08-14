@@ -5,32 +5,32 @@ import random
 # Define parameters for each class
 conditions = {
     "High": {
-        "soil_moisture": (65, 80),    # Optimal for most crops (e.g., wheat, corn)
-        "humidity": (60, 75),          # Ideal RH range
-        "temp": (20, 28),              # Moderate temperatures (°C)
-        "light": (800, 1200),          # Full sunlight (μmol/m²/s, PAR)
-        "months": [4, 5, 6, 9, 10]    # Spring/fall growing seasons
+        "soil_moisture": (65, 80),    # Optimal moisture
+        "humidity": (60, 75),         # Ideal RH
+        "temp": (20, 28),             # Prime growing temp
+        "light": (800, 1200),         # Full sunlight
+        "months": [4, 5, 6, 9, 10]   # Peak seasons
     },
     "Medium": {
-        "soil_moisture": (50, 65),     # Slightly dry but manageable
-        "humidity": (50, 60),          # Suboptimal humidity
-        "temp": (28, 32),              # Warm but tolerable
-        "light": (600, 800),           # Partial shade/cloudy
-        "months": [3, 7, 11]           # Shoulder seasons
+        "soil_moisture": (50, 65),    # Slightly dry
+        "humidity": (50, 60),         # Moderate RH
+        "temp": (25, 32),             # Tolerable range
+        "light": (600, 800),          # Partial shade
+        "months": [3, 7, 11]          # Shoulder months
     },
     "Low": {
-        "soil_moisture": (35, 50),     # Dry soil (needs irrigation)
-        "humidity": (40, 50),          # Low humidity
-        "temp": (32, 38),             # Heat stress possible
-        "light": (300, 600),           # Heavy shade/low light
-        "months": [1, 2, 12]          # Winter months (dormant)
+        "soil_moisture": (20, 50),    # Explicitly dry (previously overlapped with Medium)
+        "humidity": (30, 50),         # Low RH
+        "temp": (32, 38),             # Heat stress
+        "light": (200, 600),          # Low light (300-600 was overlapping with Medium)
+        "months": [1, 2, 12]          # Off-season
     },
     "Unsustainable": {
-        "soil_moisture": (0, 35),
-        "humidity": (10, 40),
-        "temp": [(0, 15), (38, 50)],  # List of possible ranges
-        "light": [(0, 300), (1201, 2000)],
-        "months": [8]
+        "soil_moisture": (0, 30),     # Critical drought (no overlap with Low)
+        "humidity": (10, 70),         # Extreme aridity
+        "temp": [(0, 10), (38, 50)],  # Frost OR extreme heat
+        "light": [(0, 500), (1500, 2000)], # Pitch dark OR scorching
+        "months": [8]                 # Stress peak month
     }
 }
 
@@ -47,12 +47,12 @@ data = []
 for status, params in conditions.items():
     for _ in range(3000):
         row = {
-                'soil_moisture': generate_value(params['soil_moisture']),
-                'humidity': generate_value(params['humidity']),
-                'temperature': generate_value(params['temp']),
-                'light_intensity': generate_value(params['light']),
-                'month': int(np.random.choice(params['months'])),
-                'status': status
+                'Soil Moisture': generate_value(params['soil_moisture']),
+                'Humidity': generate_value(params['humidity']),
+                'Temperature': generate_value(params['temp']),
+                'Light Intensity': generate_value(params['light']),
+                'Month': int(np.random.choice(params['months'])),
+                'Status': status
             }
         data.append(row)
 

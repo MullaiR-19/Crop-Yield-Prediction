@@ -11,6 +11,7 @@ from datetime import datetime
 import requests
 import pyttsx3
 
+alert_running = False
 
 model = joblib.load("asserts/crop_yield_decision_tree_model.joblib")
 
@@ -117,7 +118,7 @@ def show_pump_gif_for_10_seconds():
     pump_gif_running = True
     pump_gif_label.pack(pady=5)
     animate_pump_gif()
-    root.after(10000, hide_pump_gif)  # hide after 10 seconds
+    root.after(20000, hide_pump_gif)  # hide after 10 seconds
 
 def hide_pump_gif():
     global pump_gif_running
@@ -156,6 +157,38 @@ def on_sprinkle_button_click():
             print("Error sending to Arduino:", e)
 
     show_pump_gif_for_10_seconds()
+
+
+def check_and_alert(status, soil_moisture):
+    global alert_running
+
+    if (status in ["Low", "Unsustainable"] and soil_moisture < 35):
+        if not alert_running:   # only start if not already running
+            alert_running = True
+
+            def alert_loop():
+                try:
+                    # Voice alert
+                    sprinkle_button.config(bg="red")
+                    speaker = pyttsx3.init()
+                    rate = speaker.getProperty('rate')
+                    speaker.setProperty('rate', rate - 50)
+                    speaker.say("Need water")
+                    speaker.runAndWait()
+                    sprinkle_button.config(bg="green")
+                except Exception as e:
+                    print("Alert error:", e)
+
+                finally:
+                    root.after(2000, reset_alert)
+
+            threading.Thread(target=alert_loop, daemon=True).start()
+
+def reset_alert():
+    global alert_running
+    alert_running = False
+    sprinkle_button.config(bg="#2E8B57")
+
 
 
 # Buttons
@@ -215,8 +248,8 @@ def read_serial():
                 parts = line.split(",")
                 if len(parts) == 4:
                     soil = int(parts[0])
-                    temp = float(parts[1])
-                    hum = float(parts[2])
+                    temp = float(parts[1])-2
+                    hum = float(parts[2])-15
                     lux = int(parts[3])
 
                     soil_pct = soil
@@ -228,6 +261,7 @@ def read_serial():
 
                     status = predict_status(soil_pct, temp, hum, lux)
                     print(status)
+                    check_and_alert(status, soil_pct)
 
                     status_to_yield = {
                         "High": 90,

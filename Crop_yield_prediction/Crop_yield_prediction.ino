@@ -7,8 +7,8 @@ Servo myServo_2;
 #define DHTPIN 12      // DHT11 sensor pin
 #define LED_PIN 4      // LED pin 13
 #define RELAY_PIN 11    // Relay Pin 6
-#define SERVO_PIN_1 5   // Main Servo 3
-#define SERVO_PIN_2 9  //Sprinkler Servo 5
+#define SERVO_PIN_1 3   // Main Servo 3
+#define SERVO_PIN_2 5  //Sprinkler Servo 5
 
 #define DHTTYPE DHT11
 
@@ -22,8 +22,8 @@ void setup() {
   myServo_1.attach(SERVO_PIN_1);
   myServo_2.attach(SERVO_PIN_2);
 
-  myServo_1.write(90);
-  myServo_2.write(30);
+  myServo_1.write(100);
+  myServo_2.write(40);
 }
 
 void loop() {
@@ -34,7 +34,7 @@ void loop() {
 
   // Check if DHT reading failed
   if (isnan(temp) || isnan(hum)) {
-    //    Serial.println("DHT read failed");
+    Serial.println("DHT read failed");
     temp = 36;
     hum = 70;
   }
@@ -57,23 +57,25 @@ void loop() {
 
   if (Serial.available()) {
     char cmd = Serial.read();
+    //    Serial.print("CMD: ");
+    //    Serial.print(cmd);
     if (cmd == 'W') {
-      myServo_1.write(90);
-
+      myServo_1.write(100);
+      Serial.print("Servo running");
       sprinkle();
-      for (int i = 90; i >= 10; i--) {
+      for (int i = 100; i >= 35; i--) {
         myServo_1.write(i);
         delay(15);
       }
 
       sprinkle();
-      for (int i = 10; i <= 170; i++) {
+      for (int i = 35; i <= 165; i++) {
         myServo_1.write(i);
         delay(15);
       }
 
       sprinkle();
-      for (int i = 170; i >= 90; i--) {
+      for (int i = 165; i >= 100; i--) {
         myServo_1.write(i);
         delay(15);
       }
@@ -87,11 +89,11 @@ void loop() {
 //Sprinkler head rotate function
 void sprinkle() {
   digitalWrite(RELAY_PIN, HIGH);
-  for (int i = 30; i <= 150; i++) {
+  for (int i = 40; i <= 140; i++) {
     myServo_2.write(i);
     delay(40);
   }
-  for (int i = 150; i >=  30; i--) {
+  for (int i = 140; i >= 40; i--) {
     myServo_2.write(i);
     delay(40);
   }
