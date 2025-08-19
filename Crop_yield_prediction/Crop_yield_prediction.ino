@@ -6,8 +6,8 @@ Servo myServo_2;
 
 #define DHTPIN 12      // DHT11 sensor pin
 #define LED_PIN 4      // LED pin 13
-#define RELAY_PIN 11    // Relay Pin 6
-#define SERVO_PIN_1 3   // Main Servo 3
+#define RELAY_PIN 11   // Relay Pin 6
+#define SERVO_PIN_1 3  // Main Servo 3
 #define SERVO_PIN_2 5  //Sprinkler Servo 5
 
 #define DHTTYPE DHT11
@@ -22,8 +22,8 @@ void setup() {
   myServo_1.attach(SERVO_PIN_1);
   myServo_2.attach(SERVO_PIN_2);
 
-  myServo_1.write(100);
-  myServo_2.write(40);
+  myServo_1.write(90);
+  myServo_2.write(110);
 }
 
 void loop() {
@@ -60,41 +60,70 @@ void loop() {
     //    Serial.print("CMD: ");
     //    Serial.print(cmd);
     if (cmd == 'W') {
-      myServo_1.write(100);
-      Serial.print("Servo running");
-      sprinkle();
-      for (int i = 100; i >= 35; i--) {
-        myServo_1.write(i);
-        delay(15);
+      myServo_2.write(110);
+      for (int i = 110; i <= 180; i++) {
+        myServo_2.write(i);
+        delay(40);
       }
 
-      sprinkle();
-      for (int i = 35; i <= 165; i++) {
-        myServo_1.write(i);
-        delay(15);
-      }
+      sprinkle_cane();
+      delay(100);
+      sprinkle_ragi();
 
-      sprinkle();
-      for (int i = 165; i >= 100; i--) {
-        myServo_1.write(i);
-        delay(15);
+      for (int i = 180; i >= 110; i--) {
+        myServo_2.write(i);
+        delay(40);
       }
-
-      delay(1000);
-      digitalWrite(RELAY_PIN, LOW);
     }
   }
 }
-
 //Sprinkler head rotate function
-void sprinkle() {
-  digitalWrite(RELAY_PIN, HIGH);
-  for (int i = 40; i <= 140; i++) {
-    myServo_2.write(i);
+void sprinkle_cane() {
+  int x = 2;
+  for (int i = 100; i > 20; i--) {
+    myServo_1.write(i);
     delay(40);
   }
-  for (int i = 140; i >= 40; i--) {
-    myServo_2.write(i);
+  digitalWrite(RELAY_PIN, HIGH);
+  while (x != 0) {
+    for (int i = 20; i <= 100; i++) {
+      myServo_1.write(i);
+      delay(40);
+    }
+    for (int i = 100; i >= 20; i--) {
+      myServo_1.write(i);
+      delay(40);
+    }
+    x--;
+  }
+  for (int i = 20; i <= 100; i++) {
+    myServo_1.write(i);
+    delay(40);
+  }
+  digitalWrite(RELAY_PIN, LOW);
+  delay(200);
+}
+
+void sprinkle_ragi() {
+  int x = 1;
+  for (int i = 100; i < 160; i++) {
+    myServo_1.write(i);
+    delay(40);
+  }
+  digitalWrite(RELAY_PIN, HIGH);
+  while (x != 0) {
+    for (int i = 160; i >= 100; i--) {
+      myServo_1.write(i);
+      delay(40);
+    }
+    for (int i = 100; i <= 160; i++) {
+      myServo_1.write(i);
+      delay(40);
+    }
+    x--;
+  }
+  for (int i = 160; i >= 100; i--) {
+    myServo_1.write(i);
     delay(40);
   }
   digitalWrite(RELAY_PIN, LOW);
